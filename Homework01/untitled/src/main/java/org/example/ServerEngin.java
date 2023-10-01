@@ -8,13 +8,23 @@ public class ServerEngin {
     public void run() {
         this.mh = new MessageHandler(new ArrayList<ClientUI>());
         ServerUI serverUI = new ServerUI(mh);
-        mh.addServer(serverUI); // Заменить после добавления эддера базового класса
+        mh.addServer(serverUI);
+
 
 //        Имитация добавления нового клиента
-        newClient();
+        new ClientUI(this);
+//        newClient();
     }
 
-    private void newClient() {
-        mh.addClient(new ClientUI(mh));
+    private void newClient(ClientUI client) {
+        mh.addClient(client);
+    }
+
+    public MessageHandler authorize(String IPValue, String PortValue, String LoginValue, String PassValue,
+                                    ClientUI client) {
+//        TODO: Добавить процесс авторизации на сервере
+        newClient(client);
+        System.out.println("Add new client");
+        return mh;
     }
 }

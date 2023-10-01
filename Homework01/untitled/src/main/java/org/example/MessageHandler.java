@@ -17,6 +17,7 @@ public class MessageHandler {
 
     public void addClient(ClientUI newClient) {
         clients.add(newClient);
+//        TODO: Добавить логин к сообщению
     }
 
     public void newMessage(String message) {

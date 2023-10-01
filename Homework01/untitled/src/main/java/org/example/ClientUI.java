@@ -13,19 +13,22 @@ public class ClientUI extends JFrame {
 
 
     private JButton btnLogin, btnSend;
-    private JTextField fieldIP, fieldPort, fieldLogin, fieldPass, fieldEntry;
+    private JTextField fieldIP, fieldPort, fieldLogin, fieldEntry;
+    private JPasswordField fieldPass;
     private Label stub;
     private TextArea textArea;
 
     private MessageHandler mh;
+    private ServerEngin server;
 
-    public ClientUI(MessageHandler mh) {
+    public ClientUI(ServerEngin server) {
+        this.server = server;
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocation(POS_X, POS_Y);
         setResizable(false);
         setTitle("Chat client");
 
-        initComponents(mh);
+        initComponents();
         JPanel panAuthorization = createAuthorizationPanel();
         JPanel panEntry = entryPanel();
 
@@ -37,34 +40,42 @@ public class ClientUI extends JFrame {
 
     }
 
-    private void initComponents(MessageHandler mh) {
-        this.mh = mh;
+    private void initComponents() {
         this.textArea = new TextArea();
         textArea.setEditable(false);
         this.btnLogin = new JButton("Login");
         this.btnSend = new JButton("Send");
-        addBtnListeners();
         this.fieldIP = new JTextField();
         this.fieldPort = new JTextField();
         this.fieldLogin = new JTextField();
-        this.fieldPass = new JTextField();
-//        TODO: Добавить скрытие
+        this.fieldPass = new JPasswordField();
         this.fieldEntry = new JTextField();
         this.stub = new Label();
+        addAuthorizationListener();
     }
 
-    private void addBtnListeners(){
+    private void addAuthorizationListener(){
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String IPValue = fieldIP.getText();
                 String PortValue = fieldPort.getText();
                 String LoginValue = fieldLogin.getText();
-                String PassValue = fieldPass.getText();
+                String PassValue = String.valueOf(fieldPass.getPassword());
                 authorization(IPValue, PortValue, LoginValue, PassValue);
-//                TODO: Скрыть блок авторизации
             }
         });
+    }
+
+    private void authorization(String IPValue, String PortValue, String LoginValue, String PassValue){
+        this.mh = server.authorize(IPValue, PortValue, LoginValue, PassValue, this);
+        addMessageListener(mh);
+        textArea.append("Authorization\n");
+//        TODO: Добавить чекеры
+//        TODO: Добавить загрузку логов из файла (получать от сервера)
+    }
+
+    private void addMessageListener(MessageHandler mh){
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -72,17 +83,6 @@ public class ClientUI extends JFrame {
                 fieldEntry.setText("");
             }
         });
-    }
-
-    private void authorization(String IPValue, String PortValue, String LoginValue, String PassValue){
-        textArea.append("Authorization\n");
-//        TODO: Добавить чекеры
-//        TODO: Добавить авторизацию
-    }
-
-    private void sendMessage(String message){
-        textArea.append(message + '\n');
-//        TODO: добавить отправку сообщения на сервер
     }
 
     private JPanel createAuthorizationPanel() {
