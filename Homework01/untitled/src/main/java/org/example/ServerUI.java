@@ -68,11 +68,13 @@ public class ServerUI extends UI {
             case 1 -> textArea.append("Server Already Started\n");
             case 2 -> textArea.append("Fail\n");
         }
-//        TODO: Добавить блокировку MessageHandler-а и авторизации до старта сервера
     }
 
     private void stopServer() {
-//        TODO: Добавить блокировку MessageHandler-а и авторизации после старта сервера
-        textArea.append("Stop Server\n");
+        switch (engin.stop()) {
+            case 0 -> textArea.append("Server Stopped\n");
+            case 1 -> textArea.append("Server Already Stopped\n");
+            case 2 -> textArea.append("Fail\n");
+        }
     }
 }

@@ -8,9 +8,11 @@ public class ServerEngin {
 
     public ServerEngin() {
         this.isRun = false;
-        this.mh = new MessageHandler(new ArrayList<UI>());
+        this.mh = new MessageHandler();
         ServerUI serverUI = new ServerUI(this, mh);
         mh.addMember(serverUI);
+//        TODO: Добавить загрузку списка мемберов
+//        TODO: Добавить загрузку чата
     }
 
 
@@ -19,8 +21,25 @@ public class ServerEngin {
         try {
             if (!isRun) {
                 isRun = true;
+                mh.run();
                 return 0;
             } else if (isRun) {
+                return 1;
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException();
+        }
+        return 2;
+    }
+
+    public int stop() {
+//            Имитация остановки сервера
+        try {
+            if (isRun) {
+                isRun = false;
+                mh.stop();
+                return 0;
+            } else if (!isRun) {
                 return 1;
             }
         } catch (RuntimeException e) {

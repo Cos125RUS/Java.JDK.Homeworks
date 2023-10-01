@@ -52,7 +52,7 @@ public class ClientUI extends UI {
         addAuthorizationListener();
     }
 
-    private void addAuthorizationListener(){
+    private void addAuthorizationListener() {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,15 +65,20 @@ public class ClientUI extends UI {
         });
     }
 
-    private void authorization(String IPValue, String PortValue, String LoginValue, String PassValue){
-        super.mh = server.authorize(IPValue, PortValue, LoginValue, PassValue, this);
-        addMessageListener(mh);
-        textArea.append("Authorization\n");
+    private void authorization(String IPValue, String PortValue, String LoginValue, String PassValue) {
+        try {
+            super.mh = server.authorize(IPValue, PortValue, LoginValue, PassValue, this);
+            addMessageListener(mh);
+            textArea.append("Authorization\n");
+        } catch (RuntimeException e) {
+            throw new RuntimeException();
+//            TODO: Создать исключения с имитацией плохого соединения
+        }
 //        TODO: Добавить чекеры
 //        TODO: Добавить загрузку логов из файла (получать от сервера)
     }
 
-    private void addMessageListener(MessageHandler mh){
+    private void addMessageListener(MessageHandler mh) {
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -84,7 +89,7 @@ public class ClientUI extends UI {
     }
 
     private JPanel createAuthorizationPanel() {
-        JPanel panAuthorization = new JPanel(new GridLayout(2,3));
+        JPanel panAuthorization = new JPanel(new GridLayout(2, 3));
         panAuthorization.add(fieldIP);
         panAuthorization.add(fieldPort);
         panAuthorization.add(stub);
