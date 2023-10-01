@@ -2,6 +2,8 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ServerUI extends JFrame {
     private static final int WINDOW_WIDTH = 600;
@@ -37,7 +39,33 @@ public class ServerUI extends JFrame {
 
     private void initComponents() {
         this.textArea = new TextArea();
+        textArea.setEditable(false);
         this.btnStart = new JButton("Start");
         this.btnStop = new JButton("Stop");
+        addBtnListeners();
+
+    }
+
+    private void addBtnListeners(){
+        btnStart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                startServer();
+            }
+        });
+        btnStop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stopServer();
+            }
+        });
+    }
+
+    private void startServer(){
+        textArea.append("Server Started\n");
+    }
+
+    private void stopServer() {
+        textArea.append("Stop Server\n");
     }
 }

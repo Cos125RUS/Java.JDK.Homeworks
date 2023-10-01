@@ -2,6 +2,8 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ClientUI extends JFrame {
     private static final int WINDOW_WIDTH = 600;
@@ -35,14 +37,49 @@ public class ClientUI extends JFrame {
 
     private void initComponents() {
         this.textArea = new TextArea();
+        textArea.setEditable(false);
         this.btnLogin = new JButton("Login");
         this.btnSend = new JButton("Send");
+        addBtnListeners();
         this.fieldIP = new JTextField();
         this.fieldPort = new JTextField();
         this.fieldLogin = new JTextField();
         this.fieldPass = new JTextField();
+//        TODO: Добавить скрытие
         this.fieldEntry = new JTextField();
         this.stub = new Label();
+    }
+
+    private void addBtnListeners(){
+        btnLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String IPValue = fieldIP.getText();
+                String PortValue = fieldPort.getText();
+                String LoginValue = fieldLogin.getText();
+                String PassValue = fieldPass.getText();
+                authorization(IPValue, PortValue, LoginValue, PassValue);
+//                TODO: Скрыть блок авторизации
+            }
+        });
+        btnSend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendMessage(fieldEntry.getText());
+                fieldEntry.setText("");
+            }
+        });
+    }
+
+    private void authorization(String IPValue, String PortValue, String LoginValue, String PassValue){
+        textArea.append("Authorization\n");
+//        TODO: Добавить чекеры
+//        TODO: Добавить авторизацию
+    }
+
+    private void sendMessage(String message){
+        textArea.append(message + '\n');
+//        TODO: добавить отправку сообщения на сервер
     }
 
     private JPanel createAuthorizationPanel() {
