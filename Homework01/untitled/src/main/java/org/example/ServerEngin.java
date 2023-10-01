@@ -4,27 +4,39 @@ import java.util.ArrayList;
 
 public class ServerEngin {
     private MessageHandler mh;
+    private boolean isRun;
 
-    public void run() {
-        this.mh = new MessageHandler(new ArrayList<ClientUI>());
-        ServerUI serverUI = new ServerUI(mh);
-        mh.addServer(serverUI);
+    public ServerEngin() {
+        this.isRun = false;
+        this.mh = new MessageHandler(new ArrayList<UI>());
+        ServerUI serverUI = new ServerUI(this, mh);
+        mh.addMember(serverUI);
+    }
 
 
-//        Имитация добавления нового клиента
-        new ClientUI(this);
-//        newClient();
+    public int run() {
+//            Имитация запуска сервера
+        try {
+            if (!isRun) {
+                isRun = true;
+                return 0;
+            } else if (isRun) {
+                return 1;
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException();
+        }
+        return 2;
     }
 
     private void newClient(ClientUI client) {
-        mh.addClient(client);
+        mh.addMember(client);
     }
 
     public MessageHandler authorize(String IPValue, String PortValue, String LoginValue, String PassValue,
                                     ClientUI client) {
 //        TODO: Добавить процесс авторизации на сервере
         newClient(client);
-        System.out.println("Add new client");
         return mh;
     }
 }

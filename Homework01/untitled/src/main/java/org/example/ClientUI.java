@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ClientUI extends JFrame {
+public class ClientUI extends UI {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 400;
     private static final int POS_X = 200;
@@ -16,9 +16,7 @@ public class ClientUI extends JFrame {
     private JTextField fieldIP, fieldPort, fieldLogin, fieldEntry;
     private JPasswordField fieldPass;
     private Label stub;
-    private TextArea textArea;
 
-    private MessageHandler mh;
     private ServerEngin server;
 
     public ClientUI(ServerEngin server) {
@@ -41,7 +39,7 @@ public class ClientUI extends JFrame {
     }
 
     private void initComponents() {
-        this.textArea = new TextArea();
+        super.textArea = new TextArea();
         textArea.setEditable(false);
         this.btnLogin = new JButton("Login");
         this.btnSend = new JButton("Send");
@@ -68,7 +66,7 @@ public class ClientUI extends JFrame {
     }
 
     private void authorization(String IPValue, String PortValue, String LoginValue, String PassValue){
-        this.mh = server.authorize(IPValue, PortValue, LoginValue, PassValue, this);
+        super.mh = server.authorize(IPValue, PortValue, LoginValue, PassValue, this);
         addMessageListener(mh);
         textArea.append("Authorization\n");
 //        TODO: Добавить чекеры
@@ -105,10 +103,5 @@ public class ClientUI extends JFrame {
         panEntry.add(fieldEntry, bag);
         panEntry.add(btnSend);
         return panEntry;
-    }
-
-    public void newMessage(String message) {
-//        TODO: убрать в супер-класс
-        textArea.append(message + '\n');
     }
 }
