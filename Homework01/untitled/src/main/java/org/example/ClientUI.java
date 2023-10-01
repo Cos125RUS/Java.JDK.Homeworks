@@ -17,13 +17,15 @@ public class ClientUI extends JFrame {
     private Label stub;
     private TextArea textArea;
 
-    public ClientUI() {
+    private MessageHandler mh;
+
+    public ClientUI(MessageHandler mh) {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocation(POS_X, POS_Y);
         setResizable(false);
         setTitle("Chat client");
 
-        initComponents();
+        initComponents(mh);
         JPanel panAuthorization = createAuthorizationPanel();
         JPanel panEntry = entryPanel();
 
@@ -35,7 +37,8 @@ public class ClientUI extends JFrame {
 
     }
 
-    private void initComponents() {
+    private void initComponents(MessageHandler mh) {
+        this.mh = mh;
         this.textArea = new TextArea();
         textArea.setEditable(false);
         this.btnLogin = new JButton("Login");
@@ -65,7 +68,7 @@ public class ClientUI extends JFrame {
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sendMessage(fieldEntry.getText());
+                mh.newMessage(fieldEntry.getText());
                 fieldEntry.setText("");
             }
         });
@@ -102,5 +105,10 @@ public class ClientUI extends JFrame {
         panEntry.add(fieldEntry, bag);
         panEntry.add(btnSend);
         return panEntry;
+    }
+
+    public void newMessage(String message) {
+//        TODO: убрать в супер-класс
+        textArea.append(message + '\n');
     }
 }

@@ -14,9 +14,11 @@ public class ServerUI extends JFrame {
     private TextArea textArea;
     private JButton btnStart, btnStop;
 
-    public ServerUI() {
+    private MessageHandler mh;
+
+    public ServerUI(MessageHandler mh) {
         setWindowOptions();
-        initComponents();
+        initComponents(mh);
 
         JPanel panButtons = new JPanel(new GridLayout(1, 2));
         panButtons.add(btnStart);
@@ -37,7 +39,8 @@ public class ServerUI extends JFrame {
         setTitle("Chat Server");
     }
 
-    private void initComponents() {
+    private void initComponents(MessageHandler mh) {
+        this.mh = mh;
         this.textArea = new TextArea();
         textArea.setEditable(false);
         this.btnStart = new JButton("Start");
@@ -63,9 +66,17 @@ public class ServerUI extends JFrame {
 
     private void startServer(){
         textArea.append("Server Started\n");
+//        TODO: Добавить блокировку MessageHandler-а и авторизации до старта сервера
     }
 
     private void stopServer() {
+//        TODO: Добавить блокировку MessageHandler-а и авторизации после старта сервера
         textArea.append("Stop Server\n");
+    }
+
+    public void newMessage(String message) {
+//        TODO: убрать в супер-класс
+//        TODO: добавить логирование в файл
+        textArea.append(message + '\n');
     }
 }
