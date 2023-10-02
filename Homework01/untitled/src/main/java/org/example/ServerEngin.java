@@ -34,8 +34,8 @@ public class ServerEngin {
             } else if (isRun) {
                 return 1;
             }
-        } catch (RuntimeException e) {
-            throw new RuntimeException();
+        } catch (StartServerException e) {
+            mh.newMessage(e.getMessage());
         }
         return 2;
     }
@@ -51,8 +51,8 @@ public class ServerEngin {
             } else if (!isRun) {
                 return 1;
             }
-        } catch (RuntimeException e) {
-            throw new RuntimeException();
+        } catch (StopServerException e) {
+            e.printStackTrace();
         }
         return 2;
     }
@@ -87,10 +87,10 @@ public class ServerEngin {
             try {
                 Files.createFile(Paths.get(CLIENT_LIST_PATH));
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                e.printStackTrace();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -103,19 +103,17 @@ public class ServerEngin {
             bw.append(String.format(message + '\n'));
             bw.flush();
             mh.newMessage(message);
-        } catch (FileNotFoundException e) {
-            try {
-                Files.createFile(Paths.get(CHAT_HISTORY_PATH));
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+        } catch (ConnectionException e) {
+            mh.newMessage(e.getMessage());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            mh.newMessage("Error");
         }
     }
 
     public void getHistory() {
         String history = loadHistory();
+        if (history.length() == 0)
+            history = "Welcome to chat\n";
         mh.newMessage(history);
     }
 
@@ -127,10 +125,8 @@ public class ServerEngin {
                 history += line + '\n';
             }
             return history;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             return history;
         }
@@ -140,7 +136,7 @@ public class ServerEngin {
         try {
             Files.createDirectories(Paths.get("server"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         try (BufferedReader br = new BufferedReader(new FileReader(CLIENT_LIST_PATH))) {
             String line;
@@ -152,11 +148,11 @@ public class ServerEngin {
             try {
                 Files.createFile(Paths.get(CLIENT_LIST_PATH));
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                e.printStackTrace();
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }
