@@ -1,6 +1,6 @@
 package org.example;
 
-public class ChatException extends RuntimeException {
+class ChatException extends RuntimeException {
 
     public ChatException() {
         super("ChatRuntimeException");
