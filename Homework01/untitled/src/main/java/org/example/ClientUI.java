@@ -85,19 +85,19 @@ public class ClientUI extends UI {
         int check = 5;
         if ((check = checkValue(ipValue, portValue, loginValue, passValue)) == 0) {
             save(ipValue, portValue, loginValue, passValue);
-            if (server.authorize(ipValue, portValue, loginValue, passValue, this)) {
+            if (server.authorize(loginValue, passValue, this)) {
                 addMessageListener();
                 server.getHistory();
             } else {
-                textArea.append("There is no connection with the server\n");
+                textArea.append("No connection with the server\n");
             }
         } else {
             switch (check) {
-                case 1 -> textArea.append("Bad value of IP");
-                case 2 -> textArea.append("Bad value of port number");
-                case 3 -> textArea.append("Bad value of login");
-                case 4 -> textArea.append("Bad value of password");
-                case 5 -> textArea.append("Entry error");
+                case 1 -> textArea.append("Bad value of IP\n");
+                case 2 -> textArea.append("Bad value of port number\n");
+                case 3 -> textArea.append("Bad value of login\n");
+                case 4 -> textArea.append("Bad value of password\n");
+                case 5 -> textArea.append("Entry error\n");
             }
         }
     }
@@ -158,7 +158,8 @@ public class ClientUI extends UI {
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                server.newMessage(fieldEntry.getText());
+                String entryLine = String.format("(" + fieldLogin.getText() + ") >> " + fieldEntry.getText());
+                server.newMessage(entryLine);
                 fieldEntry.setText("");
             }
         });

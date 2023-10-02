@@ -38,3 +38,4 @@ build/
 .DS_Store
 /client/user.txt
 /server/ChatHistory.txt
+/server/ClientList.txt
