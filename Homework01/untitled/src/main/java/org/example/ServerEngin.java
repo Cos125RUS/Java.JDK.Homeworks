@@ -9,7 +9,7 @@ import java.util.Map;
 public class ServerEngin {
     private static final String CHAT_HISTORY_PATH = "server/ChatHistory.txt";
     private static final String CLIENT_LIST_PATH = "server/ClientList.txt";
-    private static final String SOCKET = "127.0.0.1:8988";
+    //    private static final String SOCKET = "127.0.0.1:8988";
     private final MessageHandler mh;
     private boolean isRun;
     private Map<String, String> members;
@@ -19,8 +19,8 @@ public class ServerEngin {
         this.members = new HashMap<>();
         this.mh = new MessageHandler();
         ServerUI serverUI = new ServerUI(this, mh);
-        mh.addMember(serverUI);
         loadMembersList();
+        mh.addMember(serverUI);
     }
 
 
@@ -71,24 +71,24 @@ public class ServerEngin {
     private boolean checkUser(String loginValue, String passValue) {
         if (searchInMembers(loginValue)) {
             return (members.get(loginValue).equals(passValue));
-        }
-        else
+        } else
             newMember(loginValue, passValue);
         return true;
     }
 
-    private boolean searchInMembers(String loginValue){
-        try {
-            members.get(loginValue);
-            return true;
-        } catch (RuntimeException e) {
-            return false;
-        }
+    private boolean searchInMembers(String loginValue) {
+        return (members.get(loginValue) != null);
     }
 
     private void newMember(String loginValue, String passValue) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(CLIENT_LIST_PATH, true))) {
             bw.append(String.format(loginValue + "/" + passValue));
+        } catch (FileNotFoundException e) {
+            try {
+                Files.createFile(Paths.get(CLIENT_LIST_PATH));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -104,7 +104,11 @@ public class ServerEngin {
             bw.flush();
             mh.newMessage(message);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            try {
+                Files.createFile(Paths.get(CHAT_HISTORY_PATH));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -133,6 +137,11 @@ public class ServerEngin {
     }
 
     private void loadMembersList() {
+        try {
+            Files.createDirectories(Paths.get("server"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         try (BufferedReader br = new BufferedReader(new FileReader(CLIENT_LIST_PATH))) {
             String line;
             while ((line = br.readLine()) != null) {

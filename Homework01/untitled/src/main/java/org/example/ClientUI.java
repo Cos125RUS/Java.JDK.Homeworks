@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ClientUI extends UI {
     private static final int WINDOW_WIDTH = 600;
@@ -69,13 +71,22 @@ public class ClientUI extends UI {
     }
 
     private void loadUserData() {
+        try {
+            Files.createDirectories(Paths.get("client"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         try (BufferedReader br = new BufferedReader(new FileReader(USER_DATA_FILE))) {
             fieldIP.setText(br.readLine());
             fieldPort.setText(br.readLine());
             fieldLogin.setText(br.readLine());
             fieldPass.setText(br.readLine());
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            try {
+                Files.createFile(Paths.get(USER_DATA_FILE));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
