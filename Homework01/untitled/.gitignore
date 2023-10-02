@@ -36,3 +36,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/client/user.txt
+/server/ChatHistory.txt

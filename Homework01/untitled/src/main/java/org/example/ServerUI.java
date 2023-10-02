@@ -10,9 +10,11 @@ public class ServerUI extends UI {
     private static final int WINDOW_HEIGHT = 400;
     private static final int POS_X = 800;
     private static final int POS_Y = 300;
+    private static final String windowName = "Chat Server";
 
     private JButton btnStart, btnStop;
     private ServerEngin engin;
+    protected MessageHandler mh;
 
     public ServerUI(ServerEngin engin, MessageHandler mh) {
         setWindowOptions();
@@ -34,11 +36,11 @@ public class ServerUI extends UI {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocation(POS_X, POS_Y);
         setResizable(false);
-        setTitle("Chat Server");
+        setTitle(windowName);
     }
 
     private void initComponents(ServerEngin engin, MessageHandler mh) {
-        super.mh = mh;
+        this.mh = mh;
         super.textArea = new TextArea();
         textArea.setEditable(false);
         this.engin = engin;

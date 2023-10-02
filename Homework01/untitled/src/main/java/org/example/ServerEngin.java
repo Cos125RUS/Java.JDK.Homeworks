@@ -1,9 +1,12 @@
 package org.example;
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class ServerEngin {
-    private MessageHandler mh;
+    private static final String chatHistoryPath = "server/ChatHistory.txt";
+    private static final String clientListPath = "server/ClientList.txt";
+    private final MessageHandler mh;
     private boolean isRun;
 
     public ServerEngin() {
@@ -11,8 +14,8 @@ public class ServerEngin {
         this.mh = new MessageHandler();
         ServerUI serverUI = new ServerUI(this, mh);
         mh.addMember(serverUI);
+//        TODO: Добавить отправку истории чата
 //        TODO: Добавить загрузку списка мемберов
-//        TODO: Добавить загрузку чата
     }
 
 
@@ -48,14 +51,53 @@ public class ServerEngin {
         return 2;
     }
 
+    public boolean authorize(String IPValue, String PortValue, String LoginValue, String PassValue,
+                             ClientUI client) {
+//        TODO: Добавить процесс авторизации на сервере
+        if (isRun) {
+            newClient(client);
+            return true;
+        } else
+            return false;
+    }
+
     private void newClient(ClientUI client) {
         mh.addMember(client);
     }
 
-    public MessageHandler authorize(String IPValue, String PortValue, String LoginValue, String PassValue,
-                                    ClientUI client) {
-//        TODO: Добавить процесс авторизации на сервере
-        newClient(client);
-        return mh;
+    public void newMessage(String message) {
+//        TODO: Добавить обработку исключений
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(chatHistoryPath, true))) {
+            bw.append(String.format(message + '\n'));
+            bw.flush();
+            mh.newMessage(message);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void getHistory() {
+        String history = loadHistory();
+        mh.newMessage(history);
+    }
+
+    private String loadHistory() {
+//        TODO: Добавить обработку исключений
+        String history = "";
+        try (BufferedReader br = new BufferedReader(new FileReader(chatHistoryPath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                history += line + '\n';
+            }
+            return history;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            return history;
+        }
     }
 }

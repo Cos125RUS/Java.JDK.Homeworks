@@ -26,7 +26,6 @@ public class MessageHandler {
     }
 
     public void newMessage(String message) {
-//        TODO: Добавить логирование
         if (isWork) {
             for (UI client : members) {
                 client.newMessage(message);
