@@ -169,11 +169,17 @@ public class ClientUI extends UI {
             return false;
         else {
             for (String bit : bits) {
+                int b = -1;
                 try {
-                    Integer.parseInt(String.valueOf(bit));
+                    b = Integer.parseInt(String.valueOf(bit));
                 } catch (NumberFormatException e) {
                     return false;
                 }
+                if (b < 0 || b > 255)
+                    return false;
+                if (Integer.parseInt(String.valueOf(bits[0])) == 0 ||
+                        Integer.parseInt(String.valueOf(bits[3])) == 0)
+                    return false;
             }
         }
         return true;
