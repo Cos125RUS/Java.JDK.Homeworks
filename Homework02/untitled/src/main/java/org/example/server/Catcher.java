@@ -7,60 +7,70 @@ import java.net.Socket;
 /**
  * Выжидатель новых подключений
  */
-public class Catcher extends Thread{
+public class Catcher extends Thread {
+    private final int portNumber;
     private ServerSocket serverSocket;
     private Server server;
 
     /**
      * Отлов новых подключений
-     * @param serverSocket
+     *
      * @param server
      */
-    public Catcher(ServerSocket serverSocket, Server server) {
-        try {
-            this.serverSocket = new ServerSocket(8888);
-            this.server = server;
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+    public Catcher(Server server, int portNumber) {
+        this.server = server;
+        this.portNumber = portNumber;
     }
 
 
     @Override
     public void run() {
         boolean caught = false;
-        while (!caught){
-            try {
-                caught = true;
-                Socket client = serverSocket.accept();
+        try {
+            this.serverSocket = new ServerSocket(portNumber);
+            while (!caught) {
                 try {
-                    System.out.println(serverSocket.isClosed());
-                    String login = "login";
-                    server.newUser(login, client);
+                    Socket client = serverSocket.accept();
+                    caught = true;
                     try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(
-                                client.getInputStream()));
-                        while (true) {
-                            String word = in.readLine();
-                            System.out.println(word);
+                        try {
+                            BufferedReader clientIn = new BufferedReader(new InputStreamReader(
+                                    client.getInputStream()));
+                            BufferedWriter clientOut = new BufferedWriter(new OutputStreamWriter(
+                                    client.getOutputStream()));
+                            String login = clientIn.readLine();
+                            server.printLog(login);
+                            String password = clientIn.readLine();
+                            server.printLog(password);
+                            clientOut.write("access");
+//                          TODO Добавить авторизацию
+                            server.newUser(login, client);
+                            while (client.isConnected()) {
+                                server.printMessage(clientIn.readLine());
+                            }
+                        } catch (IOException e) {
+                            server.printLog(e.getMessage());
                         }
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-//                        throw new RuntimeException(e);
+                    } finally {
+                        client.close();
                     }
-                } finally {
-                    client.close();
-                }
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-//                throw new RuntimeException(e);
-            } finally {
-                try {
-                    serverSocket.close();
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
-//                    throw new RuntimeException(e);
+                    server.printLog(e.getMessage());
+                } finally {
+                    try {
+                        serverSocket.close();
+                    } catch (IOException e) {
+                        server.printLog(e.getMessage());
+                    }
                 }
+            }
+        } catch (IOException e) {
+            server.printLog(e.getMessage());
+        } finally {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                server.printLog(e.getMessage());
             }
         }
     }

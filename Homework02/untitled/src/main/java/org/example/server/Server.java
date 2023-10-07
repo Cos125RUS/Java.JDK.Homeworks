@@ -22,7 +22,6 @@ public class Server {
 
     private boolean isRun;
     private ArrayList<String> chat;
-    private ServerSocket serverSocket;
 
     public static void main(String[] args) {
         new Server();
@@ -44,25 +43,20 @@ public class Server {
     public int startServer() {
         try {
             if (!isRun) {
-                try {
-//                    serverSocket = new ServerSocket(PORT);
-                    this.catcher = new Catcher(serverSocket, this);
+                    this.catcher = new Catcher(this, PORT);
                     catcher.start();
                     isRun = true;
                     try {
                         chat.add(repo.getHistory());
                     } catch (RuntimeException | IOException e) {
-                        admin.printLog(e.getMessage());
+                        printLog(e.getMessage());
                     }
                     return 0;
-                } finally {
-//                    serverSocket.close();
-                }
             } else if (isRun) {
                 return 1;
             }
         } catch (StartServerException e) {
-            admin.printLog(e.getMessage());
+            printLog(e.getMessage());
         }
         return 666;
     }
@@ -82,13 +76,21 @@ public class Server {
                 return 1;
             }
         } catch (StopServerException e) {
-            admin.printLog(e.getMessage());
+            printLog(e.getMessage());
         }
         return 666;
     }
 
     public void newUser(String login, Socket userSocket){
         connects.put(login, userSocket);
-        System.out.println(login);
+        printLog(login);
+    }
+
+    public void printLog(String log) {
+        admin.printLog(log);
+    }
+
+    public void printMessage(String message) {
+        admin.printMessage(message);
     }
 }
