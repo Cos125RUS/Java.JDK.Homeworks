@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 
 public class Client {
     private static final String USER_DATA_FILE = "src/files/client/user.txt";
-    private final ClientUI ui;
+    private final ClientView ui;
     private final Validation validator;
 
     private Socket socket;
@@ -21,12 +21,14 @@ public class Client {
     private String login;
     private String password;
     private boolean isConnection;
+    private String buffer;
 
     public Client() {
         this.host = "";
         this.port = 0;
         this.login = "";
         this.password = "";
+        this.buffer = "";
         this.validator = new Validator();
         this.ui = new ClientUI(this);
         ui.setUserData(getUserData());
@@ -38,7 +40,7 @@ public class Client {
 
     public String[] getUserData() {
         loadUserData();
-        return new String[] {host, String.valueOf(port), login,password};
+        return new String[]{host, String.valueOf(port), login, password};
     }
 
     private void loadUserData() {
@@ -73,6 +75,7 @@ public class Client {
         int check = 5;
         if ((check = validator.checkValue(ipValue, portValue, loginValue, passValue)) == 0) {
             save(ipValue, portValue, loginValue, passValue);
+            ui.addMessageListener();
             try {
                 this.connect = new Connect(this, ipValue, Integer.parseInt(portValue), loginValue,
                         passValue);
@@ -80,12 +83,11 @@ public class Client {
             } catch (IOException e) {
                 ui.printMessage(e.getMessage());
             }
-            if (isConnection) {
-                ui.addMessageListener();
+//            if (isConnection) {
 //                TODO запрос истории
-            } else {
-                ui.printMessage("Не удалось установить соединение с сервером\n");
-            }
+//            } else {
+//                ui.printMessage("Не удалось установить соединение с сервером\n");
+//            }
         } else {
             switch (check) {
                 case 1 -> ui.printMessage("Bad value of IP\n");
@@ -112,8 +114,14 @@ public class Client {
         ui.printMessage(message);
     }
 
-    public void sendMessage(String message) {
-        connect.send(message);
+    public void newMessage(String message) {
+        buffer = message;
+    }
+
+    public String sendMessage() {
+        String message = buffer;
+        buffer = "";
+        return message;
     }
 
     public void check(boolean answer) {

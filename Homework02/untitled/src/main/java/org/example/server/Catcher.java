@@ -8,9 +8,12 @@ import java.net.Socket;
  * Выжидатель новых подключений
  */
 public class Catcher extends Thread {
+    private static BufferedReader clientIn;
+    private static BufferedWriter clientOut;
     private final int portNumber;
     private ServerSocket serverSocket;
     private Server server;
+    private String message;
 
     /**
      * Отлов новых подключений
@@ -20,6 +23,7 @@ public class Catcher extends Thread {
     public Catcher(Server server, int portNumber) {
         this.server = server;
         this.portNumber = portNumber;
+        this.message = "";
     }
 
 
@@ -34,31 +38,41 @@ public class Catcher extends Thread {
                     caught = true;
                     try {
                         try {
-                            BufferedReader clientIn = new BufferedReader(new InputStreamReader(
+                            clientIn = new BufferedReader(new InputStreamReader(
                                     client.getInputStream()));
-                            BufferedWriter clientOut = new BufferedWriter(new OutputStreamWriter(
+                            clientOut = new BufferedWriter(new OutputStreamWriter(
                                     client.getOutputStream()));
                             String login = clientIn.readLine();
                             server.printLog(login);
-                            String password = clientIn.readLine();
-                            server.printLog(password);
-                            clientOut.write("access");
+//                            String password = clientIn.readLine();
+//                            server.printLog(password);
+                            clientOut.write("access\n");
+                            clientOut.flush();
 //                          TODO Добавить авторизацию
                             server.newUser(login, client);
+                            server.printLog("Новый юзер: " + login);
                             while (client.isConnected()) {
-                                server.printMessage(clientIn.readLine());
+//                                server.printLog("Готов принимать сообщение");
+                                server.printMessage(message = clientIn.readLine());
+                                clientOut.write(message + "\n");
+                                clientOut.flush();
                             }
                         } catch (IOException e) {
                             server.printLog(e.getMessage());
+                        } finally {
+                            clientIn.close();
+                            clientOut.close();
                         }
                     } finally {
                         client.close();
+                        server.printLog("Соединение разорвано");
                     }
                 } catch (IOException e) {
                     server.printLog(e.getMessage());
                 } finally {
                     try {
                         serverSocket.close();
+                        server.printLog("Сервер закрыл соединение");
                     } catch (IOException e) {
                         server.printLog(e.getMessage());
                     }

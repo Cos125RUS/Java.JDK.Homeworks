@@ -83,7 +83,7 @@ public class Server {
 
     public void newUser(String login, Socket userSocket){
         connects.put(login, userSocket);
-        printLog(login);
+//        printLog(login);
     }
 
     public void printLog(String log) {

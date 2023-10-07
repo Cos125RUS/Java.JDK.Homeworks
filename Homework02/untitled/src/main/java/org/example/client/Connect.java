@@ -11,6 +11,8 @@ public class Connect extends Thread implements Connection {
     private String host;
     private int port;
     private String newMessage;
+    private static BufferedReader reader;
+    private static BufferedWriter writer;
 
 
     public Connect(Client client, String host, int port, String login, String password) throws IOException {
@@ -23,8 +25,8 @@ public class Connect extends Thread implements Connection {
     }
 
     @Override
-    public void send(String message) {
-        newMessage = message;
+    public String send() {
+        return client.sendMessage();
     }
 
     @Override
@@ -41,41 +43,47 @@ public class Connect extends Thread implements Connection {
     public void run() {
         try {
             this.socket = new Socket(host, port);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             try {
-                writer.write(login);
-                writer.write(password);
+                print("Подключение...\n");
+                writer.write(login + "\n");
+                writer.flush();
+//                writer.write(password);
+//                writer.flush();
                 String answer = reader.readLine();
-                print(answer);
+//                print(answer);
                 if (answer.equals("access")) {
-                    print("Соединение установлено");
+                    print("Соединение установлено\n");
                     check(true);
                     while (socket.isConnected()) {
-                        if (newMessage.equals("")) {
+                        if ((newMessage = send()).isEmpty()) {
                             sleep(60);
                         } else {
-                            writer.write(newMessage);
+                            writer.write(newMessage + "\n");
+                            writer.flush();
+                            print(reader.readLine() + "\n");
                         }
                     }
                 } else {
 //                    TODO Ошибка авторизации
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                print(e.getMessage());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                print(e.getMessage());
             } finally {
                 reader.close();
                 writer.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            print(e.getMessage());
         } finally {
             try {
                 socket.close();
+                print("Соединение разорвано");
             } catch (IOException e) {
-                e.printStackTrace();
+                print(e.getMessage());
             }
         }
 

@@ -127,7 +127,7 @@ public class ClientUI extends JFrame implements ClientView {
         String timeStamp = String.format(date[2] + " " + date[1] + " " + date[3]);
         String entryLine = String.format("[" + timeStamp + "] (" + fieldLogin.getText() + ") >> "
                 + fieldEntry.getText());
-        engin.sendMessage(entryLine);
+        engin.newMessage(entryLine);
         fieldEntry.setText("");
     }
 
