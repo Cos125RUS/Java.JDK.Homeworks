@@ -17,4 +17,9 @@ public interface ClientView {
      * Добавление слушателей отправки сообщений
      */
     void addMessageListener();
+
+    /**
+     * Успешная авторизация
+     */
+    void authorization();
 }

@@ -43,21 +43,33 @@ public class Catcher extends Thread {
                             clientOut = new BufferedWriter(new OutputStreamWriter(
                                     client.getOutputStream()));
                             String login = clientIn.readLine();
-                            server.printLog(login);
-//                            String password = clientIn.readLine();
+//                            server.printLog(login);
+                            String password = clientIn.readLine();
 //                            server.printLog(password);
-                            clientOut.write("access\n");
-                            clientOut.flush();
-//                          TODO Добавить авторизацию
-                            server.newUser(login, client);
-                            server.printLog("Новый юзер: " + login);
-                            while (client.isConnected()) {
-//                                server.printLog("Готов принимать сообщение");
-                                server.printMessage(message = clientIn.readLine());
-                                clientOut.write(message + "\n");
+                            if (server.authorization(login, password)) {
+                                clientOut.write("access\n");
+                                clientOut.flush();
+                                for (String line : server.getHistory()) {
+                                    sleep(100);
+                                    server.printMessage(line);
+                                    clientOut.write(line + "\n");
+                                    clientOut.flush();
+                                }
+                                clientOut.write("finish\n");
+                                clientOut.flush();
+                                server.newUser(login, client);
+                                server.printLog("Новый юзер: " + login);
+                                while (client.isConnected()) {
+                                    server.printMessage(message = clientIn.readLine());
+                                    clientOut.write(message + "\n");
+                                    clientOut.flush();
+                                    server.addToHistory(message);
+                                }
+                            } else {
+                                clientOut.write("denied\n");
                                 clientOut.flush();
                             }
-                        } catch (IOException e) {
+                        } catch (IOException | InterruptedException e) {
                             server.printLog(e.getMessage());
                         } finally {
                             clientIn.close();
@@ -65,14 +77,14 @@ public class Catcher extends Thread {
                         }
                     } finally {
                         client.close();
-                        server.printLog("Соединение разорвано");
+                        server.printLog("Соединение на стороне клиента разорвано");
                     }
                 } catch (IOException e) {
                     server.printLog(e.getMessage());
                 } finally {
                     try {
                         serverSocket.close();
-                        server.printLog("Сервер закрыл соединение");
+                        server.printLog("Сервер разорвал соединение");
                     } catch (IOException e) {
                         server.printLog(e.getMessage());
                     }

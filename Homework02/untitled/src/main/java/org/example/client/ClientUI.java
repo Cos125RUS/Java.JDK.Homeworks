@@ -16,6 +16,8 @@ public class ClientUI extends JFrame implements ClientView {
     private static final String WINDOW_NAME = "Chat client";
 
     private final Client engin;
+
+    private JPanel panAuthorization;
     private JButton btnLogin, btnSend;
     private JTextField fieldIP, fieldPort, fieldLogin, fieldEntry;
     private JPasswordField fieldPass;
@@ -31,7 +33,7 @@ public class ClientUI extends JFrame implements ClientView {
         setTitle(WINDOW_NAME);
 
         initComponents();
-        JPanel panAuthorization = createAuthorizationPanel();
+        this.panAuthorization = createAuthorizationPanel();
         JPanel panEntry = entryPanel();
 
         add(panAuthorization, BorderLayout.NORTH);
@@ -101,6 +103,11 @@ public class ClientUI extends JFrame implements ClientView {
     public void addMessageListener() {
         buttonMessageListener();
         pressEnterMessageListener();
+    }
+
+    @Override
+    public void authorization() {
+        panAuthorization.setVisible(false);
     }
 
     private void buttonMessageListener() {

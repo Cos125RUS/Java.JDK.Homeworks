@@ -4,10 +4,11 @@ import org.example.server.exceptions.StartServerException;
 import org.example.server.exceptions.StopServerException;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Движок сервера
@@ -22,6 +23,8 @@ public class Server {
 
     private boolean isRun;
     private ArrayList<String> chat;
+    private HashMap<String, String> users;
+
 
     public static void main(String[] args) {
         new Server();
@@ -32,6 +35,7 @@ public class Server {
         this.chat = new ArrayList<>();
         this.repo = new Repo();
         this.connects = new HashMap<>(); // TODO забирать из базы данных
+        this.users = new HashMap<>();
         this.admin = new ServerUI(this);
     }
 
@@ -47,8 +51,10 @@ public class Server {
                     catcher.start();
                     isRun = true;
                     try {
-                        chat.add(repo.getHistory());
-                    } catch (RuntimeException | IOException e) {
+                        repo.load();
+                        chat = repo.getHistory();
+                        users = repo.getUsers();
+                    } catch (RuntimeException e) {
                         printLog(e.getMessage());
                     }
                     return 0;
@@ -81,16 +87,66 @@ public class Server {
         return 666;
     }
 
+    /**
+     * Добавление нового пользователя
+     * @param login
+     * @param userSocket
+     */
     public void newUser(String login, Socket userSocket){
         connects.put(login, userSocket);
 //        printLog(login);
     }
 
+    /**
+     * Печать системного лога
+     * @param log
+     */
     public void printLog(String log) {
         admin.printLog(log);
     }
 
+    /**
+     * Печать сообщений
+     * @param message
+     */
     public void printMessage(String message) {
         admin.printMessage(message);
+    }
+
+    /**
+     * Запись истории сообщений
+     * @param message новое сообщение
+     */
+    public void addToHistory(String message) {
+        repo.addMessage(message);
+        try {
+            chat.add(message);
+        } catch (RuntimeException e) {
+            printLog("Ошибка записи текущего лога истории");
+        }
+    }
+
+    /**
+     * Отправка истории чата
+     * @return
+     */
+    public ArrayList<String> getHistory() {
+        return chat;
+    }
+
+    /**
+     * Авторизация на сервере
+     * @param login
+     * @param password
+     * @return
+     */
+    public boolean authorization(String login, String password) {
+        if (users.containsKey(login))
+            return users.get(login).equals(password);
+        else {
+            users.put(login, password);
+            repo.addUser(login, password);
+            return true;
+        }
     }
 }

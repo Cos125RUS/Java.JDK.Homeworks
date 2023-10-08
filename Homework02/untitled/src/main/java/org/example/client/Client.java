@@ -20,7 +20,6 @@ public class Client {
     private int port;
     private String login;
     private String password;
-    private boolean isConnection;
     private String buffer;
 
     public Client() {
@@ -38,11 +37,19 @@ public class Client {
         new Client();
     }
 
+    /**
+     * Отправка пользовательских данных
+     *
+     * @return [host, port, login, pass]
+     */
     public String[] getUserData() {
         loadUserData();
         return new String[]{host, String.valueOf(port), login, password};
     }
 
+    /**
+     * Загрузка данных пользователя из файла
+     */
     private void loadUserData() {
         try {
             Files.createDirectories(Paths.get("src/files/client"));
@@ -71,6 +78,14 @@ public class Client {
         }
     }
 
+    /**
+     * Авторизация на сервере
+     *
+     * @param ipValue
+     * @param portValue
+     * @param loginValue
+     * @param passValue
+     */
     public void authorization(String ipValue, String portValue, String loginValue, String passValue) {
         int check = 5;
         if ((check = validator.checkValue(ipValue, portValue, loginValue, passValue)) == 0) {
@@ -83,11 +98,6 @@ public class Client {
             } catch (IOException e) {
                 ui.printMessage(e.getMessage());
             }
-//            if (isConnection) {
-//                TODO запрос истории
-//            } else {
-//                ui.printMessage("Не удалось установить соединение с сервером\n");
-//            }
         } else {
             switch (check) {
                 case 1 -> ui.printMessage("Bad value of IP\n");
@@ -99,6 +109,14 @@ public class Client {
         }
     }
 
+    /**
+     * Сохранение введённых пользователем данных
+     *
+     * @param IPValue
+     * @param PortValue
+     * @param LoginValue
+     * @param PassValue
+     */
     private void save(String IPValue, String PortValue, String LoginValue, String PassValue) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_DATA_FILE))) {
             bw.write(String.format(IPValue + '\n' + PortValue + '\n' + LoginValue + '\n' +
@@ -110,21 +128,45 @@ public class Client {
         }
     }
 
+    /**
+     * Печать нового сообщения
+     *
+     * @param message
+     */
     public void printMessage(String message) {
         ui.printMessage(message);
     }
 
+    /**
+     * Запись введённого пользователем сообщения в буфер
+     *
+     * @param message
+     */
     public void newMessage(String message) {
         buffer = message;
     }
 
+    /**
+     * Отправка сообщения, хранящегося в буфере
+     *
+     * @return
+     */
     public String sendMessage() {
         String message = buffer;
         buffer = "";
         return message;
     }
 
+    /**
+     * Проверка состояния подключения
+     *
+     * @param answer
+     */
     public void check(boolean answer) {
-        isConnection = answer;
+        if (answer) {
+            ui.authorization();
+        } else {
+            ui.printMessage("Ошибка авторизации! В доступе отказано\n");
+        }
     }
 }

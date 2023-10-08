@@ -49,13 +49,14 @@ public class Connect extends Thread implements Connection {
                 print("Подключение...\n");
                 writer.write(login + "\n");
                 writer.flush();
-//                writer.write(password);
-//                writer.flush();
-                String answer = reader.readLine();
-//                print(answer);
-                if (answer.equals("access")) {
-                    print("Соединение установлено\n");
+                writer.write(password + "\n");
+                writer.flush();
+                if (reader.readLine().equals("access")) {
                     check(true);
+                    String history = "";
+                    while (!(history = reader.readLine()).matches("finish")) {
+                        print(history + "\n");
+                    }
                     while (socket.isConnected()) {
                         if ((newMessage = send()).isEmpty()) {
                             sleep(60);
@@ -66,6 +67,7 @@ public class Connect extends Thread implements Connection {
                         }
                     }
                 } else {
+                    check(false);
 //                    TODO Ошибка авторизации
                 }
             } catch (IOException e) {
