@@ -11,8 +11,9 @@ public class Connect extends Thread implements Connection {
     private String host;
     private int port;
     private String newMessage;
-    private static BufferedReader reader;
-    private static BufferedWriter writer;
+    private InputStreamReader inputStream;
+    private BufferedReader reader;
+    private BufferedWriter writer;
 
 
     public Connect(Client client, String host, int port, String login, String password) throws IOException {
@@ -43,7 +44,8 @@ public class Connect extends Thread implements Connection {
     public void run() {
         try {
             this.socket = new Socket(host, port);
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            inputStream = new InputStreamReader(socket.getInputStream());
+            reader = new BufferedReader(inputStream);
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             try {
                 print("Подключение...\n");
@@ -58,13 +60,13 @@ public class Connect extends Thread implements Connection {
                         print(history + "\n");
                     }
                     while (socket.isConnected()) {
-                        if ((newMessage = send()).isEmpty()) {
-                            sleep(60);
-                        } else {
+                        if (inputStream.ready()) {
+                            print(reader.readLine() + "\n");
+                        } else if (!(newMessage = send()).isEmpty()) {
                             writer.write(newMessage + "\n");
                             writer.flush();
-                            print(reader.readLine() + "\n");
-                        }
+                        } else
+                            sleep(60);
                     }
                 } else {
                     check(false);

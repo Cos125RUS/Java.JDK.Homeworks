@@ -10,7 +10,7 @@ public class ServerUI extends UI {
     private static final int WINDOW_HEIGHT = 400;
     private static final int POS_X = 800;
     private static final int POS_Y = 300;
-    private static final String windowName = "Chat Server";
+    private static final String WINDOW_NAME = "Chat Server";
 
     private JButton btnStart, btnStop;
     private ServerEngin engin;

@@ -14,7 +14,6 @@ public class Client {
     private final ClientView ui;
     private final Validation validator;
 
-    private Socket socket;
     private Connect connect;
     private String host;
     private int port;

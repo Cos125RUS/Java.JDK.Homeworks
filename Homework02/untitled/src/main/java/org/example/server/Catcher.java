@@ -14,6 +14,7 @@ public class Catcher extends Thread {
     private ServerSocket serverSocket;
     private Server server;
     private String message;
+    private InputStreamReader inputStream;
 
     /**
      * Отлов новых подключений
@@ -38,14 +39,12 @@ public class Catcher extends Thread {
                     caught = true;
                     try {
                         try {
-                            clientIn = new BufferedReader(new InputStreamReader(
-                                    client.getInputStream()));
+                            inputStream = new InputStreamReader(client.getInputStream());
+                            clientIn = new BufferedReader(inputStream);
                             clientOut = new BufferedWriter(new OutputStreamWriter(
                                     client.getOutputStream()));
                             String login = clientIn.readLine();
-//                            server.printLog(login);
                             String password = clientIn.readLine();
-//                            server.printLog(password);
                             if (server.authorization(login, password)) {
                                 clientOut.write("access\n");
                                 clientOut.flush();
@@ -60,10 +59,12 @@ public class Catcher extends Thread {
                                 server.newUser(login, client);
                                 server.printLog("Новый юзер: " + login);
                                 while (client.isConnected()) {
-                                    server.printMessage(message = clientIn.readLine());
-                                    clientOut.write(message + "\n");
-                                    clientOut.flush();
-                                    server.addToHistory(message);
+                                    if (inputStream.ready()) {
+                                        server.printMessage(message = clientIn.readLine());
+                                        clientOut.write(message + "\n");
+                                        clientOut.flush();
+                                        server.addToHistory(message);
+                                    }
                                 }
                             } else {
                                 clientOut.write("denied\n");

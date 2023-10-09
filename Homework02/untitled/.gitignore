@@ -43,3 +43,5 @@ build/
 /src/main/java/org/example/Main.java
 /src/files/server/ChatHistory.txt
 /src/files/server/ClientList.txt
+/src/files/client/user.txt
+/src/main/java/org/example/tests/TestClientStream.java
