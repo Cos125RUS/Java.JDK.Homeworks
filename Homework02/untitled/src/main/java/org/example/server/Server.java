@@ -3,12 +3,14 @@ package org.example.server;
 import org.example.server.exceptions.StartServerException;
 import org.example.server.exceptions.StopServerException;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Движок сервера
@@ -16,14 +18,15 @@ import java.util.List;
 public class Server {
     private static final int PORT = 8888;
 
-    private HashMap<String, Socket> connects;
+    private ServerSocket serverSocket;
     private final ServerView admin;
     private final DataBase repo;
     private Catcher catcher;
+    private Messenger messenger;
 
     private boolean isRun;
     private ArrayList<String> chat;
-    private HashMap<String, String> users;
+    private HashMap<String, String> members;
 
 
     public static void main(String[] args) {
@@ -34,8 +37,7 @@ public class Server {
         this.isRun = false;
         this.chat = new ArrayList<>();
         this.repo = new Repo();
-        this.connects = new HashMap<>(); // TODO забирать из базы данных
-        this.users = new HashMap<>();
+        this.members = new HashMap<>();
         this.admin = new ServerUI(this);
     }
 
@@ -47,17 +49,24 @@ public class Server {
     public int startServer() {
         try {
             if (!isRun) {
-                    this.catcher = new Catcher(this, PORT);
+                try {
+                    this.serverSocket = new ServerSocket(PORT);
+                    this.catcher = new Catcher(this, serverSocket);
+                    this.messenger = new Messenger(this);
                     catcher.start();
+//                    messenger.start();
                     isRun = true;
                     try {
                         repo.load();
                         chat = repo.getHistory();
-                        users = repo.getUsers();
+                        members = repo.getUsers();
                     } catch (RuntimeException e) {
                         printLog(e.getMessage());
                     }
                     return 0;
+                } catch (IOException e) {
+                    printLog(e.getMessage());
+                }
             } else if (isRun) {
                 return 1;
             }
@@ -88,17 +97,29 @@ public class Server {
     }
 
     /**
-     * Добавление нового пользователя
+     * Добавление нового пользователя в рассылку
      * @param login
-     * @param userSocket
+     * @param password
+     * @param client
+     * @param inputStream
+     * @param clientIn
+     * @param clientOut
+     * @throws IOException
+     * @throws InterruptedException
      */
-    public void newUser(String login, Socket userSocket){
-        connects.put(login, userSocket);
-//        printLog(login);
+    public void newUser(String login, String password, Socket client,
+                        InputStreamReader inputStream, BufferedReader clientIn,
+                        BufferedWriter clientOut) throws IOException, InterruptedException {
+//        User newUser = new User(messenger, login, password, client, inputStream, clientIn, clientOut);
+        messenger.addMember(new User(messenger, login, password, client, inputStream,
+                clientIn, clientOut));
+        printLog("Новый юзер: " + login);
+
     }
 
     /**
      * Печать системного лога
+     *
      * @param log
      */
     public void printLog(String log) {
@@ -107,6 +128,7 @@ public class Server {
 
     /**
      * Печать сообщений
+     *
      * @param message
      */
     public void printMessage(String message) {
@@ -115,6 +137,7 @@ public class Server {
 
     /**
      * Запись истории сообщений
+     *
      * @param message новое сообщение
      */
     public void addToHistory(String message) {
@@ -128,6 +151,7 @@ public class Server {
 
     /**
      * Отправка истории чата
+     *
      * @return
      */
     public ArrayList<String> getHistory() {
@@ -136,17 +160,22 @@ public class Server {
 
     /**
      * Авторизация на сервере
+     *
      * @param login
      * @param password
      * @return
      */
     public boolean authorization(String login, String password) {
-        if (users.containsKey(login))
-            return users.get(login).equals(password);
+        if (members.containsKey(login))
+            return members.get(login).equals(password);
         else {
-            users.put(login, password);
+            members.put(login, password);
             repo.addUser(login, password);
             return true;
         }
+    }
+
+    public boolean isRun() {
+        return isRun;
     }
 }
