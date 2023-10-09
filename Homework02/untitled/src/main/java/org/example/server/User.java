@@ -35,14 +35,21 @@ public class User extends Thread{
         while (client.isConnected()) {
             try {
                 if (inputStream.ready()) {
-                    messenger.printMessage(message = clientIn.readLine());
-                    clientOut.write(message + "\n");
-                    clientOut.flush();
-                    messenger.addToHistory(message);
+                    message = clientIn.readLine();
+                    messenger.distribution(message);
+//                    messenger.printMessage(message = clientIn.readLine());
+//                    clientOut.write(message + "\n");
+//                    clientOut.flush();
+//                    messenger.addToHistory(message);
                 }
             } catch (IOException e) {
                 messenger.printLog(e.getMessage());
             }
         }
+    }
+
+    public void sendMessage(String message) throws IOException {
+        clientOut.write(message + "\n");
+        clientOut.flush();
     }
 }

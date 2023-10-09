@@ -83,7 +83,7 @@ public class Repo implements DataBase{
     @Override
     public void addUser(String login, String password) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(CLIENT_LIST_PATH, true))) {
-            bw.append(String.format(login + "/" + password));
+            bw.append(String.format(login + "/" + password + "\n"));
         } catch (FileNotFoundException e) {
             try {
                 Files.createFile(Paths.get(CLIENT_LIST_PATH));

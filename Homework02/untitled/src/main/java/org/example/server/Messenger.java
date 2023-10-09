@@ -1,5 +1,6 @@
 package org.example.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Messenger extends Thread implements Distribute{
@@ -43,5 +44,17 @@ public class Messenger extends Thread implements Distribute{
     @Override
     public void printLog(String log) {
         server.printLog(log);
+    }
+
+    @Override
+    public void distribution(String message) {
+        addToHistory(message);
+        for (User user: users) {
+            try {
+                user.sendMessage(message);
+            } catch (IOException e) {
+                printLog(e.getMessage());
+            }
+        }
     }
 }

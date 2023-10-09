@@ -6,4 +6,5 @@ public interface Distribute {
     void printMessage(String message);
     void addToHistory(String message);
     void printLog(String log);
+    void distribution(String message);
 }

@@ -118,7 +118,7 @@ public class Catcher extends Thread implements Listening{
         clientOut.flush();
         for (String line : server.getHistory()) {
             sleep(100);
-            server.printMessage(line);
+//            server.printMessage(line);
             clientOut.write(line + "\n");
             clientOut.flush();
         }
