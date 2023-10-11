@@ -16,7 +16,7 @@ import java.util.HashMap;
  * Движок сервера
  */
 public class Server {
-    private static final String HOST = "127.0.0.1";
+//    private static final String HOST = "127.0.0.1";
     private static final int PORT = 8888;
 
     private ServerSocket serverSocket;
@@ -85,7 +85,7 @@ public class Server {
         try {
             if (isRun) {
                 isRun = false;
-                catcher.stopCatching(HOST, PORT);
+//                catcher.stopCatching(HOST, PORT);
                 messenger.disconnect();
                 return 0;
             } else {

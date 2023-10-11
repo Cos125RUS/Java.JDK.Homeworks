@@ -12,5 +12,5 @@ public interface Listening {
     void addUser(String login, String password, Socket client, InputStreamReader inputStream,
                  BufferedReader clientIn, BufferedWriter clientOut)
             throws IOException, InterruptedException;
-    void stopCatching(String host, int port);
+//    void stopCatching(String host, int port);
 }

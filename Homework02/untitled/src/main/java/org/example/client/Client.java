@@ -167,4 +167,11 @@ public class Client {
             ui.printMessage("Ошибка авторизации! В доступе отказано\n");
         }
     }
+
+    /**
+     * Вернуть панель авторизации после дисконнекта
+     */
+    public void disconnect(){
+        ui.authorization();
+    }
 }

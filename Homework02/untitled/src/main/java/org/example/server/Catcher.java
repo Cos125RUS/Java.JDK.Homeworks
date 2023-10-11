@@ -31,6 +31,7 @@ public class Catcher extends Thread implements Listening{
     @Override
     public void run() {
         try {
+            serverSocket.setSoTimeout(1000);
             while (server.isRun()) {
                 try {
                     try {
@@ -46,7 +47,6 @@ public class Catcher extends Thread implements Listening{
                                 String password = clientIn.readLine();
                                 if (server.authorization(login, password)) {
                                     addUser(login, password, client, inputStream, clientIn, clientOut);
-                                    sleep(100);
                                 } else {
                                     clientOut.write("denied\n");
                                     clientOut.flush();
@@ -59,9 +59,12 @@ public class Catcher extends Thread implements Listening{
                         server.printLog("Соединение на стороне клиента разорвано");
                     }
                 } catch (IOException e) {
-                    server.printLog(e.getMessage());
+//                    server.printLog(e.getMessage());
+                    //Таймаут соединения
                 }
             }
+        } catch (SocketException e) {
+            server.printLog(e.getMessage());
         } finally {
             try {
                 serverSocket.close();
@@ -108,13 +111,13 @@ public class Catcher extends Thread implements Listening{
         server.newUser(login, password, client, inputStream, clientIn, clientOut);
     }
 
-    @Override
-    public void stopCatching(String host, int port) {
-        try {
-            Socket socket = new Socket(host, port);
-            socket.close();
-        } catch (IOException e) {
-            server.printLog(e.getMessage() + "\n");
-        }
-    }
+//    @Override
+//    public void stopCatching(String host, int port) {
+//        try {
+//            Socket socket = new Socket(host, port);
+//            socket.close();
+//        } catch (IOException e) {
+//            server.printLog(e.getMessage() + "\n");
+//        }
+//    }
 }

@@ -23,9 +23,11 @@ public class ClientUI extends JFrame implements ClientView {
     private JPasswordField fieldPass;
     private Label stub;
     private TextArea textArea;
+    private boolean authorization;
 
     public ClientUI(Client engin) {
         this.engin = engin;
+        this.authorization = false;
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocation(POS_X, POS_Y);
         setResizable(false);
@@ -107,7 +109,8 @@ public class ClientUI extends JFrame implements ClientView {
 
     @Override
     public void authorization() {
-        panAuthorization.setVisible(false);
+        authorization = !authorization;
+        panAuthorization.setVisible(!authorization);
     }
 
     private void buttonMessageListener() {

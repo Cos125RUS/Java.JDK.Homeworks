@@ -14,7 +14,8 @@ public class Connect extends Thread implements Connection {
     private InputStreamReader inputStream;
     private BufferedReader reader;
     private BufferedWriter writer;
-
+    private boolean isRun;
+    private boolean needHistory;
 
     public Connect(Client client, String host, int port, String login, String password) throws IOException {
         this.client = client;
@@ -23,6 +24,7 @@ public class Connect extends Thread implements Connection {
         this.host = host;
         this.port = port;
         this.newMessage = "";
+        this.needHistory = true;
     }
 
     @Override
@@ -42,6 +44,7 @@ public class Connect extends Thread implements Connection {
 
     @Override
     public void run() {
+        isRun = true;
         try {
             this.socket = new Socket(host, port);
             inputStream = new InputStreamReader(socket.getInputStream());
@@ -55,26 +58,28 @@ public class Connect extends Thread implements Connection {
                 writer.flush();
                 if (reader.readLine().equals("access")) {
                     check(true);
-                    String history = "";
+                    String history;
                     while (!(history = reader.readLine()).matches("finish")) {
                         print(history + "\n");
                     }
-                    while (socket.isConnected()) {
+                    while (isRun) {
                         if (inputStream.ready()) {
-                            print(reader.readLine() + "\n");
+                            String message = reader.readLine();
+                            if (message.equals("disconnect")){
+                                isRun = false;
+                            } else
+                                print(message + "\n");
                         } else if (!(newMessage = send()).isEmpty()) {
                             writer.write(newMessage + "\n");
                             writer.flush();
                         } else
-                            sleep(60);
+                            sleep(1000);
                     }
                 } else {
                     check(false);
 //                    TODO Ошибка авторизации
                 }
-            } catch (IOException e) {
-                print(e.getMessage());
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 print(e.getMessage());
             } finally {
                 reader.close();
@@ -86,6 +91,7 @@ public class Connect extends Thread implements Connection {
             try {
                 socket.close();
                 print("Соединение разорвано");
+                client.disconnect();
             } catch (IOException e) {
                 print(e.getMessage());
             }

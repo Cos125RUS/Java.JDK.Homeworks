@@ -40,7 +40,7 @@ public class User extends Thread {
                     message = clientIn.readLine();
                     messenger.distribution(message);
                 }
-                sleep(100);
+                sleep(1000);
             } catch (IOException | InterruptedException e) {
                 messenger.printLog(e.getMessage());
             }
@@ -54,6 +54,11 @@ public class User extends Thread {
     }
 
     public void disconnect() {
+        try {
+            sendMessage("disconnect\n");
+        } catch (IOException e) {
+            messenger.printLog(e.getMessage());
+        }
         isRun = false;
         try {
             sleep(100);
