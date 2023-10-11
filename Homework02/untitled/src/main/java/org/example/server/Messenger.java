@@ -3,7 +3,7 @@ package org.example.server;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Messenger extends Thread implements Distribute{
+public class Messenger implements Distribute{
     private ArrayList<User> users;
     private final Server server;
     private User newUser;
@@ -11,12 +11,6 @@ public class Messenger extends Thread implements Distribute{
     public Messenger(Server server) {
         this.users = new ArrayList<>();
         this.server = server;
-    }
-
-
-    @Override
-    public void run() {
-
     }
 
     @Override
@@ -56,5 +50,13 @@ public class Messenger extends Thread implements Distribute{
                 printLog(e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void disconnect() {
+        for (User user: users) {
+            user.disconnect();
+        }
+        users = new ArrayList<>();
     }
 }

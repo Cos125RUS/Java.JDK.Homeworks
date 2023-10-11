@@ -16,6 +16,7 @@ import java.util.HashMap;
  * Движок сервера
  */
 public class Server {
+    private static final String HOST = "127.0.0.1";
     private static final int PORT = 8888;
 
     private ServerSocket serverSocket;
@@ -54,7 +55,6 @@ public class Server {
                     this.catcher = new Catcher(this, serverSocket);
                     this.messenger = new Messenger(this);
                     catcher.start();
-//                    messenger.start();
                     isRun = true;
                     try {
                         repo.load();
@@ -67,7 +67,7 @@ public class Server {
                 } catch (IOException e) {
                     printLog(e.getMessage());
                 }
-            } else if (isRun) {
+            } else {
                 return 1;
             }
         } catch (StartServerException e) {
@@ -85,9 +85,10 @@ public class Server {
         try {
             if (isRun) {
                 isRun = false;
-                //TODO добавить оповещение пользователей
+                catcher.stopCatching(HOST, PORT);
+                messenger.disconnect();
                 return 0;
-            } else if (!isRun) {
+            } else {
                 return 1;
             }
         } catch (StopServerException e) {
@@ -110,7 +111,6 @@ public class Server {
     public void newUser(String login, String password, Socket client,
                         InputStreamReader inputStream, BufferedReader clientIn,
                         BufferedWriter clientOut) throws IOException, InterruptedException {
-//        User newUser = new User(messenger, login, password, client, inputStream, clientIn, clientOut);
         messenger.addMember(new User(messenger, login, password, client, inputStream,
                 clientIn, clientOut));
         printLog("Новый юзер: " + login);

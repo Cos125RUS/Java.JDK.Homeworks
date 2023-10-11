@@ -10,13 +10,9 @@ import java.util.ArrayList;
  * Выжидатель новых подключений
  */
 public class Catcher extends Thread implements Listening{
-//    private static BufferedReader clientIn;
-//    private static BufferedWriter clientOut;
-//    private final int portNumber;
     private ServerSocket serverSocket;
     private final Server server;
     private String message;
-//    private InputStreamReader inputStream;
     private final ArrayList<User> users;
 
     /**
@@ -26,7 +22,6 @@ public class Catcher extends Thread implements Listening{
      */
     public Catcher(Server server, ServerSocket serverSocket) {
         this.server = server;
-//        this.portNumber = portNumber;
         this.message = "";
         this.users = new ArrayList<>();
         this.serverSocket = serverSocket;
@@ -35,32 +30,27 @@ public class Catcher extends Thread implements Listening{
 
     @Override
     public void run() {
-//        boolean caught = false;
         try {
-//            this.serverSocket = new ServerSocket(portNumber);
             while (server.isRun()) {
                 try {
                     try {
                         Socket client = serverSocket.accept();
-//                        caught = true;
                         try {
-                            InputStreamReader inputStream = new InputStreamReader(
-                                    client.getInputStream());
-                            BufferedReader clientIn = new BufferedReader(inputStream);
-                            BufferedWriter clientOut = new BufferedWriter(new OutputStreamWriter(
-                                    client.getOutputStream()));
-                            String login = clientIn.readLine();
-//                            server.printLog(login);
-                            String password = clientIn.readLine();
-//                            server.printLog(password);
-                            if (server.authorization(login, password)) {
-                                addUser(login, password, client, inputStream, clientIn, clientOut);
-//                                while (client.isConnected()) {
-//                                    listen(inputStream, clientIn, clientOut);
-//                                }
-                            } else {
-                                clientOut.write("denied\n");
-                                clientOut.flush();
+                            if (server.isRun()) {
+                                InputStreamReader inputStream = new InputStreamReader(
+                                        client.getInputStream());
+                                BufferedReader clientIn = new BufferedReader(inputStream);
+                                BufferedWriter clientOut = new BufferedWriter(new OutputStreamWriter(
+                                        client.getOutputStream()));
+                                String login = clientIn.readLine();
+                                String password = clientIn.readLine();
+                                if (server.authorization(login, password)) {
+                                    addUser(login, password, client, inputStream, clientIn, clientOut);
+                                    sleep(100);
+                                } else {
+                                    clientOut.write("denied\n");
+                                    clientOut.flush();
+                                }
                             }
                         } catch (IOException | InterruptedException e) {
                             server.printLog(e.getMessage());
@@ -70,13 +60,6 @@ public class Catcher extends Thread implements Listening{
                     }
                 } catch (IOException e) {
                     server.printLog(e.getMessage());
-//                } finally {
-//                    try {
-//                        serverSocket.close();
-//                        server.printLog("Сервер разорвал соединение");
-//                    } catch (IOException e) {
-//                        server.printLog(e.getMessage());
-//                    }
                 }
             }
         } finally {
@@ -117,14 +100,21 @@ public class Catcher extends Thread implements Listening{
         clientOut.write("access\n");
         clientOut.flush();
         for (String line : server.getHistory()) {
-            sleep(100);
-//            server.printMessage(line);
             clientOut.write(line + "\n");
             clientOut.flush();
         }
         clientOut.write("finish\n");
         clientOut.flush();
         server.newUser(login, password, client, inputStream, clientIn, clientOut);
-//        users.add(new User(login, password, client, inputStream, clientIn, clientOut));
+    }
+
+    @Override
+    public void stopCatching(String host, int port) {
+        try {
+            Socket socket = new Socket(host, port);
+            socket.close();
+        } catch (IOException e) {
+            server.printLog(e.getMessage() + "\n");
+        }
     }
 }

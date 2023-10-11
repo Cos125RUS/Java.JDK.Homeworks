@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class User extends Thread{
+public class User extends Thread {
     private Socket client;
     private BufferedReader clientIn;
     private BufferedWriter clientOut;
@@ -15,6 +15,7 @@ public class User extends Thread{
     private String password;
     private String message;
     private Messenger messenger;
+    private boolean isRun;
 
 
     public User(Messenger messenger, String login, String password, Socket client,
@@ -32,24 +33,36 @@ public class User extends Thread{
 
     @Override
     public void run() {
-        while (client.isConnected()) {
+        this.isRun = true;
+        while (client.isConnected() && isRun) {
             try {
                 if (inputStream.ready()) {
                     message = clientIn.readLine();
                     messenger.distribution(message);
-//                    messenger.printMessage(message = clientIn.readLine());
-//                    clientOut.write(message + "\n");
-//                    clientOut.flush();
-//                    messenger.addToHistory(message);
                 }
-            } catch (IOException e) {
+                sleep(100);
+            } catch (IOException | InterruptedException e) {
                 messenger.printLog(e.getMessage());
             }
         }
+//        messenger.distribution("Соединение с сервером разорвано");
     }
 
     public void sendMessage(String message) throws IOException {
         clientOut.write(message + "\n");
         clientOut.flush();
+    }
+
+    public void disconnect() {
+        isRun = false;
+        try {
+            sleep(100);
+            client.close();
+            clientIn.close();
+            clientOut.close();
+            inputStream.close();
+        } catch (InterruptedException | IOException e) {
+            messenger.printLog(e.getMessage());
+        }
     }
 }

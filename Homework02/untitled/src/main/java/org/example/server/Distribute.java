@@ -7,4 +7,5 @@ public interface Distribute {
     void addToHistory(String message);
     void printLog(String log);
     void distribution(String message);
+    void disconnect();
 }
