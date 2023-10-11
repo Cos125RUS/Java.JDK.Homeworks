@@ -102,12 +102,14 @@ public class Catcher extends Thread implements Listening{
                         BufferedWriter clientOut) throws IOException, InterruptedException {
         clientOut.write("access\n");
         clientOut.flush();
-        for (String line : server.getHistory()) {
-            clientOut.write(line + "\n");
+        if (clientIn.readLine().equals("getHistory")) {
+            for (String line : server.getHistory()) {
+                clientOut.write(line + "\n");
+                clientOut.flush();
+            }
+            clientOut.write("finish\n");
             clientOut.flush();
         }
-        clientOut.write("finish\n");
-        clientOut.flush();
         server.newUser(login, password, client, inputStream, clientIn, clientOut);
     }
 

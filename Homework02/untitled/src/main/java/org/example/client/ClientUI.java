@@ -17,7 +17,7 @@ public class ClientUI extends JFrame implements ClientView {
 
     private final Client engin;
 
-    private JPanel panAuthorization;
+    private JPanel panAuthorization, panEntry;
     private JButton btnLogin, btnSend;
     private JTextField fieldIP, fieldPort, fieldLogin, fieldEntry;
     private JPasswordField fieldPass;
@@ -36,7 +36,8 @@ public class ClientUI extends JFrame implements ClientView {
 
         initComponents();
         this.panAuthorization = createAuthorizationPanel();
-        JPanel panEntry = entryPanel();
+        this.panEntry = entryPanel();
+        addMessageListener();
 
         add(panAuthorization, BorderLayout.NORTH);
         add(textArea, BorderLayout.CENTER);
@@ -111,6 +112,7 @@ public class ClientUI extends JFrame implements ClientView {
     public void authorization() {
         authorization = !authorization;
         panAuthorization.setVisible(!authorization);
+        panEntry.setVisible(authorization);
     }
 
     private void buttonMessageListener() {
@@ -160,6 +162,7 @@ public class ClientUI extends JFrame implements ClientView {
         bag.weighty = 0;
         panEntry.add(fieldEntry, bag);
         panEntry.add(btnSend);
+        panEntry.setVisible(false);
         return panEntry;
     }
 

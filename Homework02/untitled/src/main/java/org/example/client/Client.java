@@ -19,6 +19,7 @@ public class Client {
     private String login;
     private String password;
     private String buffer;
+    private boolean history;
 
     public Client() {
         this.host = "";
@@ -26,6 +27,7 @@ public class Client {
         this.login = "";
         this.password = "";
         this.buffer = "";
+        this.history = false;
         this.validator = new Validator();
         this.ui = new ClientUI(this);
         ui.setUserData(getUserData());
@@ -88,7 +90,6 @@ public class Client {
         int check = 5;
         if ((check = validator.checkValue(ipValue, portValue, loginValue, passValue)) == 0) {
             save(ipValue, portValue, loginValue, passValue);
-            ui.addMessageListener();
             try {
                 this.connect = new Connect(this, ipValue, Integer.parseInt(portValue), loginValue,
                         passValue);
@@ -173,5 +174,13 @@ public class Client {
      */
     public void disconnect(){
         ui.authorization();
+    }
+
+    public boolean haveHistory() {
+        return history;
+    }
+
+    public void setHistory(boolean flag) {
+        history = flag;
     }
 }

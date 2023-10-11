@@ -15,7 +15,6 @@ public class Connect extends Thread implements Connection {
     private BufferedReader reader;
     private BufferedWriter writer;
     private boolean isRun;
-    private boolean needHistory;
 
     public Connect(Client client, String host, int port, String login, String password) throws IOException {
         this.client = client;
@@ -24,7 +23,6 @@ public class Connect extends Thread implements Connection {
         this.host = host;
         this.port = port;
         this.newMessage = "";
-        this.needHistory = true;
     }
 
     @Override
@@ -58,14 +56,22 @@ public class Connect extends Thread implements Connection {
                 writer.flush();
                 if (reader.readLine().equals("access")) {
                     check(true);
-                    String history;
-                    while (!(history = reader.readLine()).matches("finish")) {
-                        print(history + "\n");
+                    if (!client.haveHistory()) {
+                        writer.write("getHistory\n");
+                        writer.flush();
+                        String history;
+                        while (!(history = reader.readLine()).matches("finish")) {
+                            print(history + "\n");
+                        }
+                        client.setHistory(true);
+                    } else {
+                        writer.write("not need a history\n");
+                        writer.flush();
                     }
                     while (isRun) {
                         if (inputStream.ready()) {
                             String message = reader.readLine();
-                            if (message.equals("disconnect")){
+                            if (message.equals("disconnect")) {
                                 isRun = false;
                             } else
                                 print(message + "\n");
