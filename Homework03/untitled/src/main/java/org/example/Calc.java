@@ -47,5 +47,7 @@ public class Calc {
         System.out.println(multiply(2, 2f));
         System.out.println(divide(13, 2));
         System.out.println(subtract(12, 4.2));
+        Number res = subtract(divide(multiply(sum(2, 4), 3f), 2), 1.7);
+        System.out.println(res);
     }
 }
