@@ -22,4 +22,10 @@ public interface ClientView {
      * Успешная авторизация
      */
     void authorization();
+
+    /**
+     * Вывод сообщения об ошибке
+     * @param error
+     */
+    void showError(String error);
 }

@@ -1,8 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class Directory {
     ArrayList<Employee> employees;
@@ -17,37 +16,34 @@ public class Directory {
 
     public ArrayList<Employee> getEmployeesBySeniority(int seniority) {
         ArrayList<Employee> found = new ArrayList<>();
-        for (Employee employee: employees) {
-            if (employee.getSeniority() == seniority)
-                found.add(employee);
-        }
+        employees.forEach(e -> {
+            if (e.getSeniority() == seniority)
+                found.add(e);
+        });
         return found;
     }
 
     public ArrayList<String> getPhonesByName(String name) {
         ArrayList<String> phones = new ArrayList<>();
-        for (Employee employee: employees) {
-            if (employee.getName().equals(name))
-                phones.add(employee.getPhone());
-        }
+        employees.forEach(e -> {
+            if (e.getName().equals(name))
+                phones.add(e.getPhone());
+        });
         return phones;
     }
 
     public ArrayList<Employee> getEmployeesById(int id) {
         ArrayList<Employee> found = new ArrayList<>();
-        for (Employee employee: employees) {
-            if (employee.getId() == id)
-                found.add(employee);
-        }
+        employees.forEach(e -> {
+            if (e.getId() == id) found.add(e);
+        });
         return found;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Employee employee: employees) {
-            sb.append(employee).append('\n');
-        }
+        employees.forEach(i -> sb.append(i.toString()).append('\n'));
         return sb.toString();
     }
 }

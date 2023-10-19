@@ -115,6 +115,11 @@ public class ClientUI extends JFrame implements ClientView {
         panEntry.setVisible(authorization);
     }
 
+    @Override
+    public void showError(String error) {
+
+    }
+
     private void buttonMessageListener() {
         btnSend.addActionListener(new ActionListener() {
             @Override
