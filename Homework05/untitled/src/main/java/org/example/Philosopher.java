@@ -1,19 +1,21 @@
 package org.example;
 
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 public class Philosopher extends Thread {
     private String name;
     private Fork left;
     private Fork right;
     private int countEat;
-    private boolean finished;
     private Random random;
+    CountDownLatch cdl;
 
-    public Philosopher(String name, Fork left, Fork right) {
+    public Philosopher(String name, Fork left, Fork right, CountDownLatch cdl) {
         this.name = name;
         this.left = left;
         this.right = right;
+        this.cdl = cdl;
         countEat = 0;
         random = new Random();
     }
@@ -27,10 +29,10 @@ public class Philosopher extends Thread {
                     eating();
                     countEat++;
                 } else {
-                    System.out.println(name + " и рад бы покушать, да вилок нет. Занята вилка "
-                            + (left.isUsing() ? left : "")
-                            + ((left.isUsing() && right.isUsing()) ? " и " : "")
-                            + (right.isUsing() ? right : ""));
+//                    System.out.println(name + " и рад бы покушать, да вилок нет. Занята вилка "
+//                            + (left.isUsing() ? left : "")
+//                            + ((left.isUsing() && right.isUsing()) ? " и " : "")
+//                            + (right.isUsing() ? right : ""));
                     sleep(random.nextLong(1000, 3000));
                 }
             }
@@ -38,7 +40,7 @@ public class Philosopher extends Thread {
             e.printStackTrace();
         }
         System.out.println(name + " наелся до отвала");
-        finished = true;
+        cdl.countDown();
     }
 
     private void eating() throws InterruptedException {
@@ -55,9 +57,5 @@ public class Philosopher extends Thread {
     private synchronized void changeForkOptions() {
         left.setUsing(!left.isUsing());
         right.setUsing(!right.isUsing());
-    }
-
-    public boolean isFinished() {
-        return finished;
     }
 }
