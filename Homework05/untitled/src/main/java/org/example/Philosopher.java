@@ -25,7 +25,7 @@ public class Philosopher extends Thread {
         try {
             sleep(random.nextLong(100, 2000));
             while (countEat < 3) {
-                if (!left.isUsing() && !right.isUsing()) {
+                if (getForkStatus()) {
                     eating();
                     countEat++;
                 } else {
@@ -57,5 +57,9 @@ public class Philosopher extends Thread {
     private synchronized void changeForkOptions() {
         left.setUsing(!left.isUsing());
         right.setUsing(!right.isUsing());
+    }
+
+    private synchronized boolean getForkStatus(){
+        return (!left.isUsing() && !right.isUsing());
     }
 }
