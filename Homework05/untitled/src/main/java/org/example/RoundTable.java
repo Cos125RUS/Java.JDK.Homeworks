@@ -35,7 +35,7 @@ public class RoundTable extends Thread {
         for (int i = 1; i < PHILOSOPHER_COUNT + 1; i++) {
             forks[i] = new Fork(i);
         }
-        forks[6] = forks[1];
+        forks[PHILOSOPHER_COUNT + 1] = forks[1];
 
         for (int i = 1; i < PHILOSOPHER_COUNT + 1; i++) {
             philosophers[i] = new Philosopher("Philosopher №" + i, forks[i], forks[i + 1], cdl);

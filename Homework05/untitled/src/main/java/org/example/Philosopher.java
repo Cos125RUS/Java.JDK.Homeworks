@@ -25,15 +25,17 @@ public class Philosopher extends Thread {
         try {
             sleep(random.nextLong(100, 2000));
             while (countEat < 3) {
-                if (!left.isUsing() && !right.isUsing()) {
-                    eating();
-                    countEat++;
-                } else {
+                synchronized (this) {
+                    if (!left.isUsing() && !right.isUsing()) {
+                        eating();
+                        countEat++;
+                    } else {
 //                    System.out.println(name + " и рад бы покушать, да вилок нет. Занята вилка "
 //                            + (left.isUsing() ? left : "")
 //                            + ((left.isUsing() && right.isUsing()) ? " и " : "")
 //                            + (right.isUsing() ? right : ""));
-                    sleep(random.nextLong(1000, 3000));
+                        sleep(random.nextLong(1000, 3000));
+                    }
                 }
             }
         } catch (InterruptedException e) {
