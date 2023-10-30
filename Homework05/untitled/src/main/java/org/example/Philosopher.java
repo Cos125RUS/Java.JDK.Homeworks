@@ -25,9 +25,8 @@ public class Philosopher extends Thread {
         try {
             sleep(random.nextLong(100, 2000));
             while (countEat < 3) {
-                if (getForkStatus()) {
+                if (useForks()) {
                     eating();
-                    countEat++;
                 } else {
 //                    System.out.println(name + " и рад бы покушать, да вилок нет. Занята вилка "
 //                            + (left.isUsing() ? left : "")
@@ -44,7 +43,6 @@ public class Philosopher extends Thread {
     }
 
     private void eating() throws InterruptedException {
-        changeForkOptions();
         System.out.println(name + " уплетает вермишель, используя вилки: " + left
                 + " и " + right);
         sleep(random.nextLong(3000, 6000));
@@ -59,7 +57,14 @@ public class Philosopher extends Thread {
         right.setUsing(!right.isUsing());
     }
 
-    private synchronized boolean getForkStatus(){
-        return (!left.isUsing() && !right.isUsing());
+    private boolean useForks() {
+        synchronized (Fork.class) {
+            if (!left.isUsing() && !right.isUsing()) {
+                changeForkOptions();
+                countEat++;
+                return true;
+            } else
+                return false;
+        }
     }
 }
