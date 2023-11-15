@@ -29,7 +29,6 @@ public class Main {
             }
             userChoice = 3 - userChoice - openDoor;
             System.out.println("Монти предложил поменять дверь и игрок выбрал дверь номер " + userChoice);
-            int res = -1;
             if (doors[userChoice].equals("АВТОМОБИЛЬ!")) {
                 System.out.println("Игрок выиграл АВТОМОБИЛЬ!!!");
                 results.put(i, 1);
